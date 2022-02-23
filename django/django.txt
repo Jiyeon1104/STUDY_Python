@@ -1,0 +1,137 @@
+https://www.djangoproject.com/
+
+잔고는 웹 앱을 만들어주는 웹 프레임워크
+
+장고는 보안 기능이 강력함
+여러 다양한 기능들이 기본적으로 제공됨
+장고는 쉽고 재미있음
+
+#1. 파이썬 가상 환경 설정 
+파이썬 프로젝트를 진행할 때 독립된 환경을 만들어줌
+예를 들면, 2개 또는 3개의 프로젝트를 개발하고 관할 때 각각 독립적인 환경에서 프로젝트들을 진행해야 할 경우가 있음
+
+#2. 가상환경에 Django 설치
+
+#3. 장고 프로젝트 생성
+장고의 프로젝트 개념은 하나의 사이트라고 보면 됨
+장고 프로젝트를 생성하면 한 개의 웹 사이트를 생성하는 것임
+하나의 프로젝트 안에는 여러 개의 앱을 만들게 됨
+장고에서의 앱은 사이트를 구성하는 특정 기능이 구현된 작업 단위를 의미함
+
+# django 한글화 (지역화)
+
+config - settings.py
+
+LANGUAGE_CODE = 'ko-kr'
+
+TIME_ZONE = 'Asia/Seoul'
+
+이렇게 바꿔주기
+
+# python manage.py migrate를 실행하여 장고가 기본적으로 설치한 여러가지 앱들을 적용(활성화)하자
+실행한 후에는 앱들 사용에 필요한 설정과 테이블들이 생성되어 사용 가능한 상태로 만들어짐
+
+# 앱 App 
+프로젝트(사이트)에 기능(앱)을 추가해야 어떤 작업을 수행할 수 있음
+게시판기능, 회원관리 기능
+
+게시판 기능을 추가해보자!!
+(mysite) C:\projects\mysite>
+
+cmd -> django-admin startapp pybo
+
+브라우저에서 특정 주소로 접근하면
+http://127.0.0.1:8000/pybo/
+
+config 폴더의 urls.py 파일에서 요청된 /pybo와 매핑된 views.py 파일의 index 함수를 호출한 결과를 브라우저에 보여줌
+
+# URL 분리
+pybo 앱에 관련된 것들은 모두 pybo디렉토리 아래에 위치시키는 것이 바람직함
+
+# 모델
+장고는 모델 model을 이용하여 기본적인 데이터베이스를 처리함
+보통은 데이터베이스에 저장하고 조회할 때 SQL을 이용해야 하지만 장고는 SQL없이도 데이터를 쉽게 처리할 수 있게 해줌
+
+class Question(models.Model) :
+    subject = models.CharField(max_length = 200)
+    content = models.TextField()
+    create_date = models.DateTimeField()
+
+class Answer(models.Model):
+    subject = models.ForeignKey(Question, on_delete=models.CASCADE)
+    content = models.TextField()
+    create_date = models.DateTimeField()
+
+Answer 모델 질문에 대한 답. 기존 모델 속성과 연결하기 위해 ForeignKey 를 사용하여 Question 모델과 연결함
+on_delete=models.CASCADE의 의미는 Question이 삭제될 경우 Answer도 함께 삭제하라 라는 의미
+
+게시판 게시물을 저장할 테이블을 생성을위해 앱을 등록함
+
+C:\project\mystie\config\settings.py
+
+INSTALLED_APPS = [
+    'django.contrib.admin',
+    'django.contrib.auth',
+    'django.contrib.contenttypes',
+    'django.contrib.sessions',
+    'django.contrib.messages',
+    'django.contrib.staticfiles',
+    ]
+
+
+c:\project\mysite\pybo\apps.py 파일에 이름이 잘 등록되어 있는지만 확인 (별 문제 없음)
+
+from django.apps import AppConfig
+
+class PyboConfig(AppConfig):
+    name = 'pybo'
+
+# 관리자 설정 (슈퍼유저)
+python manage.py migrate
+admin
+admin@mysite.com
+0000
+
+# 새로운 가상환경에 다른 버전의 django 설치
+
+C:\venvs > pyhon -m venv myapp
+C:\venvs\myapp\Scripts > activate
+
+The outer mysite/ root directory is a container for your project. Its name doesn’t matter to Django; 
+you can rename it to anything you like. 프로젝트를 포함하는 디렉토리
+
+manage.py: A command-line utility that lets you interact with this Django project in various ways. 
+You can read all the details about manage.py in django-admin and manage.py.
+잔고 프로젝트와 다양한 방식으로 상호작용하는 유틸리티 (장고의 핵심)
+
+The inner mysite/ directory is the actual Python package for your project. 
+Its name is the Python package name you’ll need to use to import anything inside it (e.g. mysite.urls).
+mysite 디렉토리의 내부에는 프로젝트의 실제 파이썬 패키지들이 있음
+
+mysite/__init__.py: An empty file that tells Python that this directory should be considered a Python package. If you’re a Python beginner, read more about packages in the official Python docs.
+__init__는 이 디렉토리가 패키지의 일부라고 알려주는 역할을 함 (예전 버전에서는 필수였으나 지금은 생략 가능)
+
+mysite/settings.py: Settings/configuration for this Django project. Django settings will tell you all about how settings work.
+장고 프로젝트의 설정 / 환경설정을 함. 셋팅은 설정들이 어떻게 작동하는지 모두 알려줌
+
+mysite/urls.py: The URL declarations for this Django project; a “table of contents” of your Django-powered site. You can read more about URLs in URL dispatcher.
+장고 프로젝트의 URL 선언, 장고로 작성된 사이트의 목차의 역할
+
+mysite/asgi.py: An entry-point for ASGI-compatible web servers to serve your project. See How to deploy with ASGI for more details.
+
+mysite/wsgi.py: An entry-point for WSGI-compatible web servers to serve your project. See How to deploy with WSGI for more details.
+
+python manage.py migrate
+설치된 앱들의 데이터베이스 설정, 테이블 생성 등 활성화 명령어
+
+파이썬에서는 데이터베이스를 모델이라고 부름
+모델마다 여러 클래스 변수라 있고 각 클래스 변수는 모델에서 데이터베이스의 필드로 사용됨
+Models.CharField 는 문자필드를 표현하고 
+Models.DateTimeField는 날짜와 시간을 표현함
+이것은 각 필드가 어떤 자료형을 가질 수 있는지를 장고에게 알려줌
+question_text or pub_date 데이터베이스에서의 필드명
+
+CharField, for example, requires that you give it a max_length.
+어떤 클래스들은 인수가 필수로 사용됨, 예를 들면 CharField 는 max_length를 입력해야만 함
+
+models.ForeignKey 를 사용하여 관계 설정을 하게 됨 / 각각의 choice가 하나의 Question에 관계된다는 것을 장고에게 알려줌
