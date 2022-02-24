@@ -92,46 +92,55 @@ admin
 admin@mysite.com
 0000
 
-# 새로운 가상환경에 다른 버전의 django 설치
+http://127.0.0.1:8000/admin/
 
-C:\venvs > pyhon -m venv myapp
-C:\venvs\myapp\Scripts > activate
+모델을 관리자 페이지에 등록
 
-The outer mysite/ root directory is a container for your project. Its name doesn’t matter to Django; 
-you can rename it to anything you like. 프로젝트를 포함하는 디렉토리
+# 화면 출력을 위한 질문 목록 만들기
 
-manage.py: A command-line utility that lets you interact with this Django project in various ways. 
-You can read all the details about manage.py in django-admin and manage.py.
-잔고 프로젝트와 다양한 방식으로 상호작용하는 유틸리티 (장고의 핵심)
+# from django.http import HttpResponse
 
-The inner mysite/ directory is the actual Python package for your project. 
-Its name is the Python package name you’ll need to use to import anything inside it (e.g. mysite.urls).
-mysite 디렉토리의 내부에는 프로젝트의 실제 파이썬 패키지들이 있음
+# Create your views here.
+from pybo.models import Question
+from django.shortcuts import render
+from .models import Question
 
-mysite/__init__.py: An empty file that tells Python that this directory should be considered a Python package. If you’re a Python beginner, read more about packages in the official Python docs.
-__init__는 이 디렉토리가 패키지의 일부라고 알려주는 역할을 함 (예전 버전에서는 필수였으나 지금은 생략 가능)
 
-mysite/settings.py: Settings/configuration for this Django project. Django settings will tell you all about how settings work.
-장고 프로젝트의 설정 / 환경설정을 함. 셋팅은 설정들이 어떻게 작동하는지 모두 알려줌
+def index(request):
+    '''
+    게시판 목록 출력
+    '''
+    question_list = Question.objects.order_by('-create_date')
+    context = {'question_list' : question_list}
+    return render(request, 'pybo/question_list.html', context)
 
-mysite/urls.py: The URL declarations for this Django project; a “table of contents” of your Django-powered site. You can read more about URLs in URL dispatcher.
-장고 프로젝트의 URL 선언, 장고로 작성된 사이트의 목차의 역할
+    # 질문 목록 데이터들은 Question.objects.order_by('-create_date')
+    # 로 얻어 옴. order_by는 조회 결과를 정렬하는 함수임 -는 역순 (게시물은 보통 최신순으로 보기 때문에)
 
-mysite/asgi.py: An entry-point for ASGI-compatible web servers to serve your project. See How to deploy with ASGI for more details.
+# 템플릿 디렉토리 설정
 
-mysite/wsgi.py: An entry-point for WSGI-compatible web servers to serve your project. See How to deploy with WSGI for more details.
+[config - settings.py]
+TEMPLATES = [
+    {
+        'BACKEND': 'django.template.backends.django.DjangoTemplates',
+        'DIRS': [BASE_DIR / 'templates'],
 
-python manage.py migrate
-설치된 앱들의 데이터베이스 설정, 테이블 생성 등 활성화 명령어
+# 화면에 띄우는 html 등의 파일 위치 설정
 
-파이썬에서는 데이터베이스를 모델이라고 부름
-모델마다 여러 클래스 변수라 있고 각 클래스 변수는 모델에서 데이터베이스의 필드로 사용됨
-Models.CharField 는 문자필드를 표현하고 
-Models.DateTimeField는 날짜와 시간을 표현함
-이것은 각 필드가 어떤 자료형을 가질 수 있는지를 장고에게 알려줌
-question_text or pub_date 데이터베이스에서의 필드명
+def detail(request, question_id):
+    '''
+    게시판 내용 출력
+    '''
+    question = Question.objects.get(id = question_id)
+    context = {'question' : question}
+    return render(request, 'pybo/question_detail.html', context)
 
-CharField, for example, requires that you give it a max_length.
-어떤 클래스들은 인수가 필수로 사용됨, 예를 들면 CharField 는 max_length를 입력해야만 함
+# 화면 꾸미기
+bootstrap
+구글 창에서 bootstrap min css 검색 download v5.0
 
-models.ForeignKey 를 사용하여 관계 설정을 하게 됨 / 각각의 choice가 하나의 Question에 관계된다는 것을 장고에게 알려줌
+아래 내용 카피
+CDN via jsDelivr에 있음
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
